@@ -956,6 +956,7 @@ export function ProjectsPage() {
         isOpen={importDialogOpen}
         onClose={() => setImportDialogOpen(false)}
         projectId={selectedProject?.id || ''}
+        defaultPresetId={selectedPresetId}
         onImport={handleImportSkills}
       />
       

@@ -13,6 +13,7 @@ interface ProjectSkillImportDialogProps {
   isOpen: boolean
   onClose: () => void
   projectId: string
+  defaultPresetId?: string | null
   onImport: (skillIds: string[], presetIds: string[], forceOverwrite: boolean, mode: SkillDistributionMode) => Promise<void>
 }
 
@@ -42,6 +43,7 @@ export function ProjectSkillImportDialog({
   isOpen,
   onClose,
   projectId,
+  defaultPresetId,
   onImport,
 }: ProjectSkillImportDialogProps) {
   const { language } = useAppStore()
@@ -89,7 +91,7 @@ export function ProjectSkillImportDialog({
       setSkillSearchKeyword('')
       setPresetSearchKeyword('')
       setSelectedSkillIds(new Set())
-      setSelectedPresetIds(new Set())
+      setSelectedPresetIds(defaultPresetId ? new Set([defaultPresetId]) : new Set())
       setSelectedTag(null)
       setStage('idle')
       setError('')
@@ -98,9 +100,13 @@ export function ProjectSkillImportDialog({
 
       configApi.getToolPresets().then((presets) => {
         setToolPresets(presets)
+        // Ensure the default preset is actually valid once presets are loaded
+        if (defaultPresetId && presets.some((p) => p.id === defaultPresetId)) {
+          setSelectedPresetIds(new Set([defaultPresetId]))
+        }
       })
     }
-  }, [isOpen, fetchTree, setSelectedTag])
+  }, [isOpen, fetchTree, setSelectedTag, defaultPresetId])
 
   const filteredSkills = useMemo(() => {
     let result = skills
